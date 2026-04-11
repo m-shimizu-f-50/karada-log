@@ -1,6 +1,173 @@
 # 機能設計書
 
-## 1. システム構成図
+## 1. デザインシステム
+
+### コンセプト
+
+「クールでモダン、動きのあるグラデーション」
+
+ブルー→パープル→ピンクのグラデーションを基調とし、洗練されたおしゃれな印象を与えるデザイン。
+スマホ利用を中心に、視認性と操作性を保ちながらリッチなUIを実現する。
+
+---
+
+### カラーパレット
+
+#### ブランドグラデーション
+
+| 用途 | Tailwind クラス | カラーコード |
+|---|---|---|
+| メイングラデーション | `from-blue-500 via-purple-500 to-pink-500` | #3B82F6 → #A855F7 → #EC4899 |
+| ライトグラデーション（背景） | `from-blue-50 via-purple-50 to-pink-50` | 薄めの同系統 |
+| ダークグラデーション（ボタンhover） | `from-blue-600 via-purple-600 to-pink-600` | 濃いめの同系統 |
+
+#### ベースカラー
+
+| 用途 | Tailwind クラス | カラーコード |
+|---|---|---|
+| 背景（ページ全体） | `bg-gray-950` | #030712 |
+| カード背景 | `bg-gray-900` | #111827 |
+| カード境界線 | `border-gray-800` | #1F2937 |
+| テキスト（メイン） | `text-white` | #FFFFFF |
+| テキスト（サブ） | `text-gray-400` | #9CA3AF |
+| テキスト（ラベル） | `text-gray-500` | #6B7280 |
+
+#### セマンティックカラー
+
+| 用途 | Tailwind クラス |
+|---|---|
+| 成功（カロリー黒字など） | `text-emerald-400` |
+| 警告（カロリー超過など） | `text-amber-400` |
+| エラー | `text-red-400` |
+
+---
+
+### タイポグラフィ
+
+| 用途 | Tailwind クラス |
+|---|---|
+| ページタイトル | `text-2xl font-bold text-white` |
+| セクション見出し | `text-lg font-semibold text-white` |
+| 数値（体重・カロリー） | `text-4xl font-bold` ＋ グラデーションテキスト |
+| 本文 | `text-sm text-gray-400` |
+| ラベル | `text-xs text-gray-500 uppercase tracking-wide` |
+
+**グラデーションテキスト（数値に使用）:**
+
+```tsx
+<span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+  68.5
+</span>
+```
+
+---
+
+### コンポーネントスタイル
+
+#### カード
+
+```tsx
+// ベースカード
+<div className="rounded-2xl bg-gray-900 border border-gray-800 p-4 shadow-lg">
+
+// グラデーションボーダーカード（強調したいカードに使用）
+<div className="rounded-2xl p-[1px] bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
+  <div className="rounded-2xl bg-gray-900 p-4">
+```
+
+#### ボタン
+
+```tsx
+// プライマリボタン（グラデーション）
+<button className="w-full rounded-xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500
+                   py-3 font-semibold text-white
+                   hover:from-blue-600 hover:via-purple-600 hover:to-pink-600
+                   transition-all duration-200 shadow-lg shadow-purple-500/25">
+
+// セカンダリボタン（アウトライン）
+<button className="w-full rounded-xl border border-gray-700 py-3 font-semibold text-gray-300
+                   hover:border-purple-500 hover:text-white transition-all duration-200">
+```
+
+#### 入力フィールド
+
+```tsx
+<input className="w-full rounded-xl bg-gray-800 border border-gray-700 px-4 py-3 text-white
+                  placeholder-gray-500
+                  focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20
+                  outline-none transition-all duration-200">
+```
+
+#### ナビゲーションバー（ボトム）
+
+```tsx
+// アクティブアイコンはグラデーション、非アクティブはグレー
+<nav className="fixed bottom-0 w-full bg-gray-900/80 backdrop-blur-md border-t border-gray-800">
+```
+
+---
+
+### アニメーション・エフェクト
+
+| 要素 | エフェクト |
+|---|---|
+| ページ遷移 | フェードイン（`animate-fade-in`） |
+| カードホバー | 微妙な浮き上がり（`hover:-translate-y-0.5 transition-transform`） |
+| ボタン押下 | スケールダウン（`active:scale-95`） |
+| グラフ描画 | 右から左へスライドイン |
+| 数値更新 | フェードで切り替え |
+
+---
+
+### 背景エフェクト
+
+ページ全体の背景に薄いグラデーションのグロー（光彩）を入れてリッチ感を演出する。
+
+```tsx
+// layout.tsx に配置
+<div className="fixed inset-0 -z-10 bg-gray-950">
+  {/* 左上のグロー */}
+  <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
+  {/* 中央のグロー */}
+  <div className="absolute top-1/3 left-1/2 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+  {/* 右下のグロー */}
+  <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl" />
+</div>
+```
+
+---
+
+### デザインイメージ（ダッシュボード）
+
+```
+┌──────────────────────────────────┐
+│ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │  ← 暗い背景（#030712）+グローエフェクト
+│                                  │
+│  Karada Log          [アイコン]   │  ← 白テキスト
+│                                  │
+│  2026年4月11日                    │  ← gray-400
+│                                  │
+│ ╔══════════════════════════════╗  │
+│ ║  今日の体重           ⚖️     ║  │  ← グラデーションボーダーカード
+│ ║                              ║  │
+│ ║   [68.5] kg                  ║  │  ← グラデーションテキスト（大）
+│ ║   目標まで -3.5 kg            ║  │  ← gray-400（小）
+│ ╚══════════════════════════════╝  │
+│                                  │
+│ ┌──────────────────────────────┐  │
+│ │  カロリー収支         🔥     │  │  ← 通常カード
+│ │  摂取 1,800 / 消費 300 kcal  │  │
+│ │  ██████████░░░░░░  +1,500    │  │  ← グラデーションプログレスバー
+│ └──────────────────────────────┘  │
+│                                  │
+│ [═══体重を記録══] [══食事を記録══] │  ← グラデーションボタン
+│ [══════════運動を記録═══════════] │
+└──────────────────────────────────┘
+```
+
+---
+
+## 2. システム構成図
 
 ```
 ┌─────────────────────────────────────────────────────────┐
