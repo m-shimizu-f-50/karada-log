@@ -1,0 +1,16 @@
+{
+	"name": "karada-log",
+	"image": "mcr.microsoft.com/devcontainers/base:bookworm",
+	"workspaceFolder": "/workspaces/karada-log",
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "20"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": ["esbenp.prettier-vscode"]
+		}
+	},
+	"forwardPorts": [3000]
+}
