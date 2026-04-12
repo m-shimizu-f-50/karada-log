@@ -9,6 +9,7 @@
 | データベース | PostgreSQL（Supabase） |
 | キャッシュ | Redis（Upstash） |
 | 認証 | NextAuth.js（Googleログイン） |
+| グラフ | Recharts |
 | LINE連携 | LINE Messaging API |
 | デプロイ | Vercel |
 
@@ -166,6 +167,10 @@ fix/*         ← バグ修正用（例: fix/calorie-calculation）
 | Vitest | ユニットテスト |
 | Prettier | コードフォーマット |
 | Tailwind CSS | スタイリング |
+| Recharts | 体重推移グラフの描画 |
+| React Hook Form | フォームの状態管理 |
+| Zod | バリデーションスキーマの定義 |
+| Prisma | データベースORM |
 
 ---
 

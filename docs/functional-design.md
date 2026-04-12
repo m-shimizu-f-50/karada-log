@@ -709,7 +709,7 @@ src/
 │   │   └── BottomNav.tsx         # ボトムナビゲーション（スマホ用）
 │   ├── weight/
 │   │   ├── WeightForm.tsx        # 体重入力フォーム
-│   │   ├── WeightChart.tsx       # 体重推移グラフ
+│   │   ├── WeightChart.tsx       # 体重推移グラフ（Recharts の LineChart を使用）
 │   │   ├── WeightHistory.tsx     # 体重記録履歴リスト
 │   │   └── WeightGoalForm.tsx    # 目標体重設定フォーム
 │   ├── meal/
