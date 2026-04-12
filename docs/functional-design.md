@@ -331,6 +331,7 @@ erDiagram
         string email
         string name
         string image
+        string lineUserId
         datetime createdAt
     }
 
@@ -385,6 +386,7 @@ erDiagram
 | email | TEXT | NOT NULL, UNIQUE | メールアドレス |
 | name | TEXT | | 表示名 |
 | image | TEXT | | プロフィール画像URL |
+| line_user_id | TEXT | UNIQUE | LINEユーザーID（フェーズ2: LINE連携時に設定） |
 | created_at | TIMESTAMPTZ | NOT NULL, DEFAULT now() | 作成日時 |
 
 #### `weight_records`
