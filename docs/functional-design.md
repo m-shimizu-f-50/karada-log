@@ -331,6 +331,7 @@ erDiagram
         string email
         string name
         string image
+        string lineUserId
         datetime createdAt
     }
 
@@ -385,6 +386,7 @@ erDiagram
 | email | TEXT | NOT NULL, UNIQUE | メールアドレス |
 | name | TEXT | | 表示名 |
 | image | TEXT | | プロフィール画像URL |
+| line_user_id | TEXT | UNIQUE | LINEユーザーID（フェーズ2: LINE連携時に設定） |
 | created_at | TIMESTAMPTZ | NOT NULL, DEFAULT now() | 作成日時 |
 
 #### `weight_records`
@@ -436,43 +438,253 @@ erDiagram
 
 ## 6. API設計
 
+### 共通仕様
+
+#### 認証
+全APIエンドポイント（`/api/auth` を除く）はセッションによる認証が必須。
+未認証の場合は `401 Unauthorized` を返す。
+
+#### エラーレスポンス形式
+```json
+{ "error": "エラーメッセージ" }
+```
+
+| ステータスコード | 意味 |
+|---|---|
+| 400 | リクエストの値が不正 |
+| 401 | 未認証 |
+| 403 | 他ユーザーのリソースへのアクセス |
+| 404 | リソースが存在しない |
+| 500 | サーバー内部エラー |
+
+---
+
 ### 認証
 
 | メソッド | パス | 説明 |
 |---|---|---|
-| GET | `/api/auth/[...nextauth]` | NextAuth.jsのハンドラ |
+| GET/POST | `/api/auth/[...nextauth]` | NextAuth.jsのハンドラ（自動生成） |
+
+---
 
 ### 体重
 
-| メソッド | パス | 説明 |
-|---|---|---|
-| GET | `/api/weight` | 体重記録一覧取得（直近30件） |
-| POST | `/api/weight` | 体重記録の登録・更新（同日は上書き） |
-| DELETE | `/api/weight/[id]` | 体重記録の削除 |
-| GET | `/api/weight/goal` | 目標体重の取得 |
-| PUT | `/api/weight/goal` | 目標体重の登録・更新 |
+#### `GET /api/weight` — 体重記録一覧取得
+
+リクエスト: なし
+
+レスポンス `200`:
+```json
+[
+  { "id": "uuid", "date": "2026-04-12", "weight": 68.5, "createdAt": "2026-04-12T00:00:00Z" },
+  { "id": "uuid", "date": "2026-04-11", "weight": 68.8, "createdAt": "2026-04-11T00:00:00Z" }
+]
+```
+※ 直近30件を日付降順で返す
+
+---
+
+#### `POST /api/weight` — 体重記録の登録（同日は上書き）
+
+リクエスト:
+```json
+{ "date": "2026-04-12", "weight": 68.5 }
+```
+
+| フィールド | 型 | 必須 | バリデーション |
+|---|---|---|---|
+| date | string | ✅ | YYYY-MM-DD形式 |
+| weight | number | ✅ | 20〜300の範囲、小数点1桁まで |
+
+レスポンス `200`（上書き） / `201`（新規作成）:
+```json
+{ "id": "uuid", "date": "2026-04-12", "weight": 68.5, "createdAt": "2026-04-12T00:00:00Z" }
+```
+
+---
+
+#### `DELETE /api/weight/[id]` — 体重記録の削除
+
+リクエスト: なし
+
+レスポンス `200`:
+```json
+{ "message": "削除しました" }
+```
+
+エラー `403`: 他ユーザーの記録を削除しようとした場合
+
+---
+
+#### `GET /api/weight/goal` — 目標体重の取得
+
+リクエスト: なし
+
+レスポンス `200`:
+```json
+{ "id": "uuid", "targetWeight": 65.0, "updatedAt": "2026-04-01T00:00:00Z" }
+```
+
+レスポンス `200`（未設定の場合）:
+```json
+{ "targetWeight": null }
+```
+
+---
+
+#### `PUT /api/weight/goal` — 目標体重の登録・更新
+
+リクエスト:
+```json
+{ "targetWeight": 65.0 }
+```
+
+| フィールド | 型 | 必須 | バリデーション |
+|---|---|---|---|
+| targetWeight | number | ✅ | 20〜300の範囲、小数点1桁まで |
+
+レスポンス `200`:
+```json
+{ "id": "uuid", "targetWeight": 65.0, "updatedAt": "2026-04-12T00:00:00Z" }
+```
+
+---
 
 ### 食事
 
-| メソッド | パス | 説明 |
-|---|---|---|
-| GET | `/api/meal?date=YYYY-MM-DD` | 指定日の食事記録一覧取得 |
-| POST | `/api/meal` | 食事記録の登録 |
-| DELETE | `/api/meal/[id]` | 食事記録の削除 |
+#### `GET /api/meal?date=YYYY-MM-DD` — 指定日の食事記録一覧取得
+
+リクエスト: クエリパラメータ `date`（省略時は今日）
+
+レスポンス `200`:
+```json
+[
+  {
+    "id": "uuid",
+    "date": "2026-04-12",
+    "mealType": "breakfast",
+    "foodName": "ご飯",
+    "calories": 250,
+    "createdAt": "2026-04-12T07:30:00Z"
+  }
+]
+```
+
+---
+
+#### `POST /api/meal` — 食事記録の登録
+
+リクエスト:
+```json
+{ "date": "2026-04-12", "mealType": "breakfast", "foodName": "ご飯", "calories": 250 }
+```
+
+| フィールド | 型 | 必須 | バリデーション |
+|---|---|---|---|
+| date | string | ✅ | YYYY-MM-DD形式 |
+| mealType | string | ✅ | `breakfast` / `lunch` / `dinner` / `snack` のいずれか |
+| foodName | string | ✅ | 1〜50文字 |
+| calories | number | ✅ | 0〜5000の整数 |
+
+レスポンス `201`:
+```json
+{
+  "id": "uuid",
+  "date": "2026-04-12",
+  "mealType": "breakfast",
+  "foodName": "ご飯",
+  "calories": 250,
+  "createdAt": "2026-04-12T07:30:00Z"
+}
+```
+
+---
+
+#### `DELETE /api/meal/[id]` — 食事記録の削除
+
+リクエスト: なし
+
+レスポンス `200`:
+```json
+{ "message": "削除しました" }
+```
+
+エラー `403`: 他ユーザーの記録を削除しようとした場合
+
+---
 
 ### 運動
 
-| メソッド | パス | 説明 |
-|---|---|---|
-| GET | `/api/exercise?date=YYYY-MM-DD` | 指定日の運動記録一覧取得 |
-| POST | `/api/exercise` | 運動記録の登録 |
-| DELETE | `/api/exercise/[id]` | 運動記録の削除 |
+#### `GET /api/exercise?date=YYYY-MM-DD` — 指定日の運動記録一覧取得
+
+リクエスト: クエリパラメータ `date`（省略時は今日）
+
+レスポンス `200`:
+```json
+[
+  {
+    "id": "uuid",
+    "date": "2026-04-12",
+    "exerciseName": "ウォーキング",
+    "durationMinutes": 30,
+    "caloriesBurned": 150,
+    "createdAt": "2026-04-12T08:00:00Z"
+  }
+]
+```
+
+---
+
+#### `POST /api/exercise` — 運動記録の登録
+
+リクエスト:
+```json
+{ "date": "2026-04-12", "exerciseName": "ウォーキング", "durationMinutes": 30, "caloriesBurned": 150 }
+```
+
+| フィールド | 型 | 必須 | バリデーション |
+|---|---|---|---|
+| date | string | ✅ | YYYY-MM-DD形式 |
+| exerciseName | string | ✅ | 1〜50文字 |
+| durationMinutes | number | ✅ | 1〜600の整数 |
+| caloriesBurned | number | ✅ | 0〜5000の整数 |
+
+レスポンス `201`:
+```json
+{
+  "id": "uuid",
+  "date": "2026-04-12",
+  "exerciseName": "ウォーキング",
+  "durationMinutes": 30,
+  "caloriesBurned": 150,
+  "createdAt": "2026-04-12T08:00:00Z"
+}
+```
+
+---
+
+#### `DELETE /api/exercise/[id]` — 運動記録の削除
+
+リクエスト: なし
+
+レスポンス `200`:
+```json
+{ "message": "削除しました" }
+```
+
+エラー `403`: 他ユーザーの記録を削除しようとした場合
+
+---
 
 ### LINE Webhook
 
-| メソッド | パス | 説明 |
-|---|---|---|
-| POST | `/api/line/webhook` | LINEからのメッセージ受信・記録処理 |
+#### `POST /api/line/webhook` — LINEメッセージ受信
+
+リクエスト: LINE Messaging APIが送信するWebhookペイロード（署名検証あり）
+
+レスポンス `200`: 常に200を返す（LINEプラットフォームの仕様）
+
+※ 詳細はセクション8「LINE連携仕様」を参照
 
 ---
 
