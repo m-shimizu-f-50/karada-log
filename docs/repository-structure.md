@@ -28,6 +28,7 @@ karada-log/
 │   ├── hooks/                      # カスタムReact Hooks
 │   ├── types/                      # TypeScript型定義
 │   └── utils/                      # 汎用ヘルパー関数
+├── middleware.ts                   # 認証ガード（未ログイン時のリダイレクト）
 ├── .env.local                      # ローカル環境変数（Gitignore対象）
 ├── .env.example                    # 環境変数のテンプレート（Git管理対象）
 ├── .gitignore
@@ -43,7 +44,30 @@ karada-log/
 
 ---
 
-## 2. `src/app/` ディレクトリ（App Router）
+## 2. `middleware.ts`
+
+`src/` と同階層（プロジェクトルート直下）に配置する。
+未ログインユーザーが保護ページにアクセスした際にログインページへリダイレクトする役割を担う。
+
+```
+// 保護対象のパス（matcher で指定）
+/dashboard, /weight, /meal, /exercise
+
+// 未認証 → /（ログインページ）へリダイレクト
+// 認証済み → そのままアクセスを許可
+```
+
+**保護対象パスの指定例:**
+
+```ts
+export const config = {
+  matcher: ['/dashboard/:path*', '/weight/:path*', '/meal/:path*', '/exercise/:path*'],
+}
+```
+
+---
+
+## 3. `src/app/` ディレクトリ（App Router）
 
 ```
 src/app/
@@ -83,7 +107,7 @@ src/app/
 
 ---
 
-## 3. `src/components/` ディレクトリ
+## 4. `src/components/` ディレクトリ
 
 ```
 src/components/
@@ -115,7 +139,7 @@ src/components/
 
 ---
 
-## 4. `src/lib/` ディレクトリ
+## 5. `src/lib/` ディレクトリ
 
 ```
 src/lib/
@@ -127,7 +151,7 @@ src/lib/
 
 ---
 
-## 5. `src/hooks/` ディレクトリ
+## 6. `src/hooks/` ディレクトリ
 
 ```
 src/hooks/
@@ -138,7 +162,7 @@ src/hooks/
 
 ---
 
-## 6. `src/types/` ディレクトリ
+## 7. `src/types/` ディレクトリ
 
 ```
 src/types/
@@ -150,7 +174,7 @@ src/types/
 
 ---
 
-## 7. `src/utils/` ディレクトリ
+## 8. `src/utils/` ディレクトリ
 
 ```
 src/utils/
@@ -161,7 +185,7 @@ src/utils/
 
 ---
 
-## 8. テストファイルの配置ルール
+## 9. テストファイルの配置ルール
 
 テストファイルはテスト対象ファイルと同じディレクトリに配置する。
 
@@ -182,7 +206,7 @@ src/utils/
 
 ---
 
-## 9. ファイル配置ルール
+## 10. ファイル配置ルール
 
 ### 命名規則
 
@@ -206,7 +230,7 @@ src/utils/
 
 ---
 
-## 10. 環境変数ファイル
+## 11. 環境変数ファイル
 
 | ファイル | Git管理 | 用途 |
 |---|---|---|
