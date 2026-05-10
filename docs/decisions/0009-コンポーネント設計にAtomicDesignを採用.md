@@ -48,23 +48,25 @@ components/
 
 ## 階層の定義
 
+Atomic Design をベースに、このプロジェクトでは3層で管理する。
+Templates 層は Next.js App Router の `layout.tsx` が同等の役割を担うため省略する。
+
 | 階層 | 役割 | 例 |
 |---|---|---|
 | Atoms | 最小単位のUI部品 | `Button`, `Input`, `Label`, `Card` |
 | Molecules | Atoms の組み合わせ | `FormField`（Label + Input）, `RecordItem` |
 | Organisms | 機能を持つ複合部品 | `WeightForm`, `WeightChart`, `Header` |
-| Templates | ページのレイアウト骨格 | `AuthenticatedLayout` |
-| Pages | 実際のページ | Next.js の `page.tsx`（App Router で対応） |
+| Pages | 実際のページ | Next.js の `page.tsx` / `layout.tsx`（App Router で対応） |
 
 ## 依存関係のルール
 
 ```
-Pages → Templates → Organisms → Molecules → Atoms
+Pages（layout.tsx / page.tsx） → Organisms → Molecules → Atoms
 ```
 
 上位層は下位層を使えるが、下位層が上位層を使うことは禁止する。
 
 ## トレードオフ・注意点
 
-- 小規模なプロジェクトでは分割しすぎると逆に管理が煩雑になる場合がある
 - コンポーネントをどの階層に置くか迷う場面が出てくるが、迷ったら「より下位層（粒度が小さい方）」に置くことを基本とする
+- Templates を省略したことで、ページレイアウトの管理は Next.js の `layout.tsx` に一本化される
