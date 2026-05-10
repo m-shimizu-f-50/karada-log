@@ -15,6 +15,42 @@ CI が通ったコードを**自動でデプロイ**する仕組み。
 
 ---
 
+## 現在の設定状況
+
+### CI（GitHub Actions）
+
+| ジョブ | 状態 | 内容 |
+|---|---|---|
+| `Frontend: Lint` | ✅ 設定済み | ESLint でコード品質チェック |
+| `Frontend: Type Check` | ✅ 設定済み | TypeScript 型エラーチェック |
+| `Frontend: Build` | ✅ 設定済み | `next build` が通るか確認 |
+| `Frontend: Test` | ⏳ 未設定 | テスト実装後に追加予定 |
+| `Backend: Lint` | ⏳ 未設定 | セクション2（バックエンド初期化）完了後に追加予定 |
+| `Backend: Type Check` | ⏳ 未設定 | セクション2完了後に追加予定 |
+| `Backend: Build` | ⏳ 未設定 | セクション2完了後に追加予定 |
+
+### CD（自動デプロイ）
+
+| サービス | 状態 | 内容 |
+|---|---|---|
+| Vercel（フロントエンド） | ⏳ 未設定 | Vercel アカウント連携後に有効化 |
+| Render（バックエンド） | ⏳ 未設定 | バックエンド実装・Render アカウント連携後に有効化 |
+
+### ブランチ保護ルール（GitHub）
+
+| ルール | 状態 |
+|---|---|
+| `main` への直接 Push を禁止 | ⏳ 未設定（GitHub リポジトリの Settings で設定が必要） |
+| PR マージに CI 通過を必須にする | ⏳ 未設定（同上） |
+
+> **ブランチ保護の設定方法**
+> GitHub リポジトリ → Settings → Branches → Add branch ruleset
+> - Branch name pattern: `main`
+> - Require status checks to pass にチェック
+> - 必須チェック対象: `Frontend: Lint` / `Frontend: Type Check` / `Frontend: Build`
+
+---
+
 ## このプロジェクトの CI/CD 全体像
 
 ```
