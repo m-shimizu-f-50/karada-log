@@ -13,12 +13,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className="h-full">
-      <body className="min-h-full bg-gray-950">
-        {/* 背景グローエフェクト（固定位置で常に表示） */}
-        <div className="fixed inset-0 -z-10 bg-gray-950">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/3 left-1/2 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl" />
+      <body className="min-h-full bg-gradient-to-br from-sky-50 via-white to-blue-50">
+        {/* 背景に薄い水色のアクセント */}
+        <div className="fixed inset-0 -z-10">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-sky-200/30 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl" />
         </div>
         {children}
       </body>

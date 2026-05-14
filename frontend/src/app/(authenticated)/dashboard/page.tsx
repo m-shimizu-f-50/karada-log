@@ -8,10 +8,10 @@ export default async function DashboardPage() {
       <p className="text-gray-400 text-sm">
         {new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })}
       </p>
-      <h1 className="mt-1 text-2xl font-bold text-white">
+      <h1 className="mt-1 text-2xl font-bold text-gray-800">
         こんにちは、{session?.user?.name?.split(' ')[0]} さん
       </h1>
-      <p className="mt-6 text-gray-500 text-sm text-center">ダッシュボード（セクション9で実装）</p>
+      <p className="mt-6 text-gray-400 text-sm text-center">ダッシュボード（セクション9で実装）</p>
     </div>
   )
 }
