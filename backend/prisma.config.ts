@@ -1,10 +1,12 @@
-import { defineConfig } from 'prisma/config'
-import { config } from 'dotenv'
+import { defineConfig } from 'prisma/config';
+import { config } from 'dotenv';
 
-config()
+// .envファイルから環境変数を読み込む
+config();
 
 export default defineConfig({
-  datasource: {
-    url: process.env.DATABASE_URL!,
-  },
-})
+	datasource: {
+		// データベース接続の設定
+		url: process.env.DATABASE_URL!,
+	},
+});

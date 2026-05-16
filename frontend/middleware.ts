@@ -1,14 +1,19 @@
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth';
 
 // 未ログイン状態で保護対象ページにアクセスした場合、トップページへリダイレクト
 export default auth((req) => {
-  if (!req.auth) {
-    const url = new URL('/', req.url)
-    return Response.redirect(url)
-  }
-})
+	if (!req.auth) {
+		const url = new URL('/', req.url);
+		return Response.redirect(url);
+	}
+});
 
-// 認証が必要なルートを指定
+// 認証が必要なルートを指定(ミドルウェアが適用されるルートを定義)
 export const config = {
-  matcher: ['/dashboard/:path*', '/weight/:path*', '/meal/:path*', '/exercise/:path*'],
-}
+	matcher: [
+		'/dashboard/:path*',
+		'/weight/:path*',
+		'/meal/:path*',
+		'/exercise/:path*',
+	],
+};
