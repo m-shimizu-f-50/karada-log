@@ -2,6 +2,7 @@ import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import type { AuthVariables } from './middleware/auth.js';
+import weightRoute from './routes/weight.js';
 
 // Honoアプリケーションのインスタンスを作成し、AuthVariables型を指定(認証情報をContextで使用するための型定義)
 const app = new Hono<{ Variables: AuthVariables }>();
@@ -20,6 +21,9 @@ app.use(
 app.get('/health', (c) => {
 	return c.json({ status: 'ok' });
 });
+
+// 体重記録ルートを登録(/api/weight 以下のリクエストを処理する)
+app.route('/api/weight', weightRoute);
 
 // サーバーを起動するポートを環境変数から取得し、デフォルトは8080
 const port = Number(process.env.PORT) || 8080;
